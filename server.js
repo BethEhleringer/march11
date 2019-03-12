@@ -39,8 +39,24 @@ if (process.env.NODE_ENV === "production") {
 app.use(routes);
 
 // Connect to the Mongo DB
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/rfphelperdb");
+//mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/rfphelperdb");
+var databaseUri = "mongodb://localhost/rfphelperdb"
+if(process.env.MONGODB_URI) {
+  //
+  mongoose.connect(process.env.MONGODB_URI);
+} else {
+  mongoose.connect(databaseUri);
+}
 
+var db = mongoose.connection;
+
+db.on('error', function(err) {
+  console.log('Mongoose Error: ', err);
+});
+
+db.once('open', function() {
+  console.log('Mongoose connection successful.');
+})
 // Start the API server
 app.listen(PORT, function() {
   console.log(`🌎  ==> API Server now listening on PORT ${PORT}!`);
